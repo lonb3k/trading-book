@@ -1,17 +1,17 @@
 id,client,trade,underlying,booked,maturity,status,value,pnl,vega,delta_usd,note
-T04,Private bank C,long AAPL 85% put Jan-27,AAPL,2026-01-12,2027-01-12,live,4437.56,-820066.5,1247.42,-88255.95,Reverse convertibles
-T05,Private bank D,long TSLA 75% put Nov-26,TSLA,2026-02-09,2026-11-09,live,71.57,-856495.04,23.75,-3862.9,Reverse convertibles
+T04,Private bank C,long AAPL 85% put Jan-27,AAPL,2026-01-12,2027-01-12,live,4437.56,-838403.38,1247.42,-88255.95,Reverse convertibles
+T05,Private bank D,long TSLA 75% put Nov-26,TSLA,2026-02-09,2026-11-09,live,71.57,-871442.12,23.75,-3862.9,Reverse convertibles
 T06,Pension fund A,short SPX 95% put Mar-27,SPX,2026-03-16,2027-03-16,live,-505005.08,3489393.4,-81082.22,7245686.06,Client rolls its tail hedge to one year
 T07,Hedge fund E,long SPX variance swap Jan-27,SPX,2026-04-13,2027-01-13,live,-922330.59,-922330.59,39490.22,0.0,Client buys dispersion: desk buys index variance (leg 1 of 5)
-T08,Hedge fund E,short AAPL variance swap Jan-27,AAPL,2026-04-13,2027-01-13,live,235594.6,235594.6,-9491.62,0.0,Client buys dispersion: desk sells single-name variance (leg 2 of 5)
-T09,Hedge fund E,short MSFT variance swap Jan-27,MSFT,2026-04-13,2027-01-13,live,392179.89,392179.89,-7287.4,0.0,Client buys dispersion (leg 3 of 5)
-T10,Hedge fund E,short NVDA variance swap Jan-27,NVDA,2026-04-13,2027-01-13,live,314181.36,314181.36,-10147.74,0.0,Client buys dispersion (leg 4 of 5)
-T11,Hedge fund E,short AMZN variance swap Jan-27,AMZN,2026-04-13,2027-01-13,live,225197.2,225197.2,-11354.7,0.0,Client buys dispersion (leg 5 of 5)
-T13,Private bank C,long AMZN 85% put Jan-27,AMZN,2026-07-06,2027-01-06,live,360689.43,-587283.6,21743.05,-3405335.34,Reverse convertibles
-T14,Private bank D,long NVDA 80% put Feb-27,NVDA,2026-08-17,2027-02-17,live,911729.99,-121952.86,45444.74,-6266403.22,Reverse convertibles
+T08,Hedge fund E,short AAPL variance swap Jan-27,AAPL,2026-04-13,2027-01-13,live,242274.79,242274.79,-9433.77,0.0,Client buys dispersion: desk sells single-name variance (leg 2 of 5)
+T09,Hedge fund E,short MSFT variance swap Jan-27,MSFT,2026-04-13,2027-01-13,live,400685.35,400685.35,-7242.64,0.0,Client buys dispersion (leg 3 of 5)
+T10,Hedge fund E,short NVDA variance swap Jan-27,NVDA,2026-04-13,2027-01-13,live,324122.09,324122.09,-10085.3,0.0,Client buys dispersion (leg 4 of 5)
+T11,Hedge fund E,short AMZN variance swap Jan-27,AMZN,2026-04-13,2027-01-13,live,234490.27,234490.27,-11285.0,0.0,Client buys dispersion (leg 5 of 5)
+T13,Private bank C,long AMZN 85% put Jan-27,AMZN,2026-07-06,2027-01-06,live,360689.43,-607981.66,21743.05,-3405335.34,Reverse convertibles
+T14,Private bank D,long NVDA 80% put Feb-27,NVDA,2026-08-17,2027-02-17,live,911729.99,-145216.87,45444.74,-6266403.22,Reverse convertibles
 T15,Macro fund G,short SPX 97% put Dec-26,SPX,2026-09-14,2026-12-14,live,-854272.72,531883.63,-96263.27,23438330.19,Client buys downside protection into year end
-T16,Private bank C,long TSLA 80% put Apr-27,TSLA,2026-10-12,2027-04-12,live,416264.84,-794786.18,28514.56,-2557566.72,Reverse convertibles
+T16,Private bank C,long TSLA 80% put Apr-27,TSLA,2026-10-12,2027-04-12,live,416264.84,-818990.29,28514.56,-2557566.72,Reverse convertibles
 T01,Pension fund A,short SPX 90% put May-26,SPX,2025-11-03,2026-05-01,expired,0.0,1836462.28,0.0,0.0,Client buys a six-month tail hedge on its equity allocation
 T02,Hedge fund B,short SPX variance swap Feb-26,SPX,2025-11-17,2026-02-17,expired,0.0,902458.44,0.0,0.0,Client buys three-month S&P 500 variance
-T03,Private bank C,long NVDA 80% put Jun-26,NVDA,2025-12-08,2026-06-08,expired,0.0,-937733.44,0.0,0.0,Reverse convertibles: the bank's clients sell the put through the note
-T12,Asset manager F,long MSFT 105% call Sep-26,MSFT,2026-06-01,2026-09-01,expired,0.0,-713095.14,0.0,0.0,Call overwriting: client sells three-month upside
+T03,Private bank C,long NVDA 80% put Jun-26,NVDA,2025-12-08,2026-06-08,expired,0.0,-958208.07,0.0,0.0,Reverse convertibles: the bank's clients sell the put through the note
+T12,Asset manager F,long MSFT 105% call Sep-26,MSFT,2026-06-01,2026-09-01,expired,0.0,-737011.85,0.0,0.0,Call overwriting: client sells three-month upside
