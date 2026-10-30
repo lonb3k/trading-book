@@ -83,7 +83,7 @@ def build_sheet(res: BookResult) -> dict:
     rt = risk.risk_today(res)
     ipv = risk.ipv(res)
     m = res.marks
-    warnings = []
+    warnings = list(res.warnings)
     model_today = [u for u in m.underlyings if m.source.at[last, u] != "live chain"]
     if model_today:
         warnings.append(f"no live chain captured today for {', '.join(model_today)}: marked by the model")

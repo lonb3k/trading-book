@@ -41,25 +41,25 @@ dispersion through variance swaps.
 
 | Since 3 Nov 2025, $k | |
 |---|---|
-| New deals (day-one margin) | +894 |
-| Gamma | +898 |
-| Vega | −850 |
-| Theta | +1,077 |
+| New deals (day-one margin) | +896 |
+| Gamma | +902 |
+| Vega | −927 |
+| Theta | +1,027 |
 | Hedging costs | −120 |
-| Unexplained | −44 |
-| Delta and its hedge | +199 and −199 |
-| **Total** | **+1,854** |
+| Unexplained | −25 |
+| Delta and its hedge | +189 and −189 |
+| **Total** | **+1,753** |
 
 - **The margin pays for half, the index variance premium for the rest.** Half the P&L is the bid-ask charged on
   day one. On the S&P 500, the puts the desk sold earned $3.7m of theta against $1.8m of gamma: the variance premium
   the vol dashboard measures, collected by the side of the trade that sells protection. On single names, the puts
-  bought from reverse convertibles earned $2.7m of gamma, paid it back in theta and lost $1.1m of vega as single-name
+  bought from reverse convertibles earned $2.7m of gamma, paid it back in theta and lost $1.2m of vega as single-name
   vol came off.
 - **The unexplained is small, and where it is not, it is a jump.** It is 3.4% of the gross Greek P&L. The three
-  largest days are earnings: Microsoft +15.5% on 30 July (+$632k on the call the desk was long), Amazon +15.3% on
+  largest days are earnings: Microsoft +15.5% on 30 July (+$637k on the call the desk was long), Amazon +15.3% on
   31 July. A second-order expansion cannot price a 15% gap. A desk reads that line to find exactly those days.
 - **The book is short correlation.** Short $138k of S&P 500 vega with long single-name vega is short correlation:
-  Corr01 is −$65k per correlation point, 86% of its limit. That is the risk the dispersion project measured, carried
+  Corr01 is −$65k per correlation point, 87% of its limit. That is the risk the dispersion project measured, carried
   by a desk.
 
 ## Axes
@@ -86,7 +86,7 @@ recycle the book's risk.
 | Variance swaps | S&P 500: VIX family, model-free. Single names: ATM × 1.10 | same |
 
 On live days the model mark is kept next to the official one. The gap times the vega is the P&L the remark moves,
-the number an independent price verification asks the desk to explain. On 30 October the model had Amazon at 33.8
+the number an independent price verification asks the desk to explain. On 30 October the model had Amazon at 34.0
 and the chain at 46.5: the chain prices the earnings, a trailing-vol model cannot.
 
 ## Decisions, and why

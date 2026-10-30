@@ -63,6 +63,7 @@ class BookResult:
     positions: pd.DataFrame    # last day, every trade ever booked
     marks: Marks
     trades: list[Trade] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)   # data problems the sheet should show
 
 
 def _t(maturity: pd.Timestamp, d: pd.Timestamp) -> float:

@@ -15,6 +15,14 @@ HISTORY_START = "2025-01-01"   # 63-day trailing vols need a few months before t
 VOL_START = "2004-01-01"       # the ATM / VIX model is fitted on the VXO years
 
 
+def stale_names(closes: pd.DataFrame, days: int = 5) -> list[str]:
+    """Basket names whose last price is more than `days` business days old: a silent gap would move the
+    single-name rebuild for every date, so the sheet says it out loud."""
+    last = closes.index.max()
+    lag = {c: len(pd.bdate_range(closes[c].last_valid_index() or closes.index.min(), last)) - 1 for c in closes}
+    return sorted(c for c, n in lag.items() if n > days)
+
+
 def load_market(offline: bool = False, start: str | None = None) -> Marks:
     trades = load_trades()
     first = start or str(min(t.trade_date for t in trades).date())
@@ -25,6 +33,7 @@ def load_market(offline: bool = False, start: str | None = None) -> Marks:
     vol = load_closes(list(VIX_FAMILY) + ["^SKEW"], VOL_START, "closes_vol_indices", offline)
     vixfam = pd.DataFrame({days: vol[t] for t, days in VIX_FAMILY.items()})
     closes = eq.join(spx, how="outer")
+    load_market.stale = stale_names(eq[[c for c in w.index if c in eq]])
     return build_marks(closes=closes, names=NAMES, vixfam=vixfam, skew_idx=vol["^SKEW"], vxo=load_vxo(offline=True),
                        cor1m=load_cboe("COR1M", offline), top50=eq[[c for c in w.index if c in eq]],
                        weights=w[[c for c in w.index if c in eq]], live_single=live_single_marks(),
@@ -32,4 +41,7 @@ def load_market(offline: bool = False, start: str | None = None) -> Marks:
 
 
 def run(offline: bool = False) -> BookResult:
-    return run_book(load_market(offline), load_trades())
+    res = run_book(load_market(offline), load_trades())
+    if load_market.stale:
+        res.warnings.append(f"no recent prices for {', '.join(load_market.stale)}: dropped from the single-name vol rebuild")
+    return res
