@@ -66,7 +66,7 @@ Delta and its hedge cancel every day and are left out.
   30 July (+$637k on the call the desk was long), Amazon +15.3% on 31 July. A second-order expansion cannot price a
   15% gap. A desk reads that line to find exactly those days.
 - **The book is short correlation.** Short $138k of S&P 500 vega with long single-name vega is short correlation:
-  Corr01 is −$59k per correlation point, 79% of its limit (87% without the pitched notes). That is the risk the
+  Corr01 is −$48k per correlation point, 64% of its limit (72% without the pitched notes). That is the risk the
   dispersion project measured, carried by a desk.
 
 ## Axes
@@ -79,7 +79,7 @@ only the price of new deals:
 
 A book long vega on a name quotes that name's vol below mid, which makes the desk the best price on notes where the
 client buys vol, and the worst where the client sells it. On 30 October the largest axes are to buy correlation
-(79% of the limit), buy S&P 500 vol (55%) and sell Tesla vol (53%).
+(64% of the limit), buy S&P 500 vol (55%) and sell Tesla vol (53%).
 
 ## Recycling with axed baskets (step 2)
 
@@ -100,10 +100,10 @@ On the first trading day of each week, sales call the one client whose note best
 | Since 5 January 2026 | With the pitched notes | Without |
 |---|---|---|
 | Notes accepted | 27 of 43 weeks (18 reverse convertibles, 9 protected notes), $540m | |
-| Risk score, average | 1.00 | 2.40 |
+| Risk score, average | 0.99 | 2.40 |
 | Days with a vega or Corr01 limit breached | 22 of 209 | 63 of 209 |
 | NVDA vega today, share of its limit | 9% | 71% |
-| Corr01 today, share of its limit | 79% | 87% |
+| Corr01 today, share of its limit | 64% | 72% |
 | Day-one margin on the notes, after the axe concession | +$1,018k | |
 | P&L of the notes, delta-hedged | +$2,249k | |
 
