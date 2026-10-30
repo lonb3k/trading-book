@@ -54,6 +54,16 @@ def vega_history(res: BookResult) -> go.Figure:
     return fig
 
 
+def score_paths(score: pd.Series, score0: pd.Series) -> go.Figure:
+    fig = _base("Risk score (sum of squared limit usages), with and without the pitched notes",
+                yaxis=dict(gridcolor=GRID, zeroline=False, ticksuffix=""))
+    fig.add_trace(go.Scatter(x=score0.index, y=score0, name="Without the notes", mode="lines",
+                             line=dict(width=1.5, color=C["orange"]), hovertemplate="%{y:.2f}"))
+    fig.add_trace(go.Scatter(x=score.index, y=score, name="With the notes", mode="lines",
+                             line=dict(width=2, color=C["blue"]), hovertemplate="%{y:.2f}"))
+    return fig
+
+
 def marks_history(res: BookResult) -> go.Figure:
     a = res.marks.atm30
     fig = _base("One-month ATM marks, vol points (model until the live chains, then the chains)",

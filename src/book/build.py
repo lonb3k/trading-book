@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .data import VIX_FAMILY, live_index_marks, live_single_marks, load_cboe, load_closes, top50_weights
+from .data import DATA_DIR, VIX_FAMILY, live_index_marks, live_single_marks, load_cboe, load_closes, top50_weights
 from .engine import BookResult, run_book
 from .links import load_vxo
 from .marks import Marks, build_marks
-from .trades import load_trades
+from .pitch import Pitcher
+from .trades import GENERATED, load_trades, to_row
+
+PITCH_LOG = DATA_DIR / "pitches.csv"
 
 NAMES = ["AAPL", "NVDA", "MSFT", "AMZN", "TSLA"]
 DIV_YIELD = {"SPX": 0.012, "AAPL": 0.004, "MSFT": 0.007, "NVDA": 0.0, "AMZN": 0.0, "TSLA": 0.0}
@@ -40,8 +43,24 @@ def load_market(offline: bool = False, start: str | None = None) -> Marks:
                        live_index=live_index_marks(), div_yield=DIV_YIELD, start=first)
 
 
-def run(offline: bool = False) -> BookResult:
-    res = run_book(load_market(offline), load_trades())
+def run(offline: bool = False, save: bool = True) -> BookResult:
+    """The evening run. Pitches only on the weeks not in the pitch log yet; accepted trades are appended to
+    the generated blotter and the log, so a booked trade is never recomputed. Also runs the book without the
+    pitched trades, the counterfactual the sheet compares against."""
+    m = load_market(offline)
+    log = pd.read_csv(PITCH_LOG, parse_dates=["date"]) if PITCH_LOG.exists() else pd.DataFrame()
+    last = log["date"].max() if not log.empty else None
+    pitcher = Pitcher(m.dates, NAMES, after=last)
+    res = run_book(m, load_trades(), pitcher=pitcher)
+    if save and res.pitches:
+        new_log = pd.DataFrame(res.pitches)
+        pd.concat([log, new_log], ignore_index=True).to_csv(PITCH_LOG, index=False)
+        if pitcher.booked:
+            rows = pd.DataFrame([to_row(t, 12) for t in pitcher.booked])
+            old = pd.read_csv(GENERATED) if GENERATED.exists() else pd.DataFrame()
+            pd.concat([old, rows], ignore_index=True).to_csv(GENERATED, index=False)
+    res.pitch_log = pd.read_csv(PITCH_LOG, parse_dates=["date"]) if PITCH_LOG.exists() else pd.DataFrame(res.pitches)
+    res.baseline = run_book(m, load_trades(include_generated=False))
     if load_market.stale:
         res.warnings.append(f"no recent prices for {', '.join(load_market.stale)}: dropped from the single-name vol rebuild")
     return res

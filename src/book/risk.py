@@ -25,6 +25,7 @@ from .marks import INDEX
 VEGA_LIMIT = {INDEX: 250_000.0, "single": 50_000.0}       # USD per vol point, absolute
 CORR01_LIMIT = 75_000.0                                     # USD per correlation point, absolute
 MAX_SHIFT = {INDEX: 0.5, "single": 1.0}                     # vol points at 100% of the limit
+MAX_CORR_SHIFT = 3.0                                        # correlation points at 100% of the Corr01 limit
 
 
 def limit_of(und: str) -> float:
@@ -34,6 +35,23 @@ def limit_of(und: str) -> float:
 def axe_shift(vega: float, und: str) -> float:
     cap = MAX_SHIFT[INDEX] if und == INDEX else MAX_SHIFT["single"]
     return float(-cap * np.clip(vega / limit_of(und), -1.0, 1.0))
+
+
+def corr_axe_shift(corr01: float) -> float:
+    """Correlation points added to the correlation mark when quoting new baskets: a book short correlation
+    pays up for it (positive shift), a book long correlation quotes it lower."""
+    return float(-MAX_CORR_SHIFT * np.clip(corr01 / CORR01_LIMIT, -1.0, 1.0))
+
+
+def risk_score(vegas: dict, corr01: float) -> float:
+    """Sum of squared limit usages: every vega line and Corr01. 1.0 is one limit fully used."""
+    return float(sum((v / limit_of(u)) ** 2 for u, v in vegas.items()) + (corr01 / CORR01_LIMIT) ** 2)
+
+
+def score_history(res: BookResult) -> pd.Series:
+    v = res.risk.pivot(index="date", columns="underlying", values="vega")
+    lim = pd.Series({u: limit_of(u) for u in v.columns})
+    return ((v / lim) ** 2).sum(axis=1) + (res.daily["corr01"] / CORR01_LIMIT) ** 2
 
 
 def risk_today(res: BookResult) -> pd.DataFrame:

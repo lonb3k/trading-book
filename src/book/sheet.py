@@ -16,7 +16,7 @@ from .engine import LINES, BookResult
 
 SPARK_POINTS = 60
 LINE_NAMES = {"new_deals": "New deals (day-one margin)", "delta": "Delta", "hedge": "Delta hedge",
-              "gamma": "Gamma", "vega": "Vega", "theta": "Theta", "hedge_costs": "Hedging costs",
+              "gamma": "Gamma", "vega": "Vega", "correlation": "Correlation", "theta": "Theta", "hedge_costs": "Hedging costs",
               "unexplained": "Unexplained"}
 
 
@@ -73,6 +73,51 @@ def _m(v: float) -> str:
     return f"{sign}${abs(v) / 1e6:,.2f}m"
 
 
+def recycling_section(res, score, score0, accepted, pitched, log) -> dict:
+    d = res.daily
+    rows = [["Notes accepted", f"{len(accepted)}", f"out of {len(log)} weekly pitch days"]]
+    if len(accepted):
+        rc = accepted[accepted["note"] == "reverse convertible"]
+        rows.append(["of which reverse convertibles / protected notes", f"{len(rc)} / {len(accepted) - len(rc)}", "desk long / short basket vol"])
+        rows.append(["Notional booked", f"${accepted['size'].sum() / 1e6:,.0f}m", ""])
+    pe = res.explain[res.explain["trade"].str.startswith("P")]
+    day_one = pe["new_deals"].sum()
+    rows.append(["Day-one margin on pitched notes", _k(day_one), "after the axe concession"])
+    rows.append(["P&L of pitched notes, delta-hedged", _k(pe["actual"].sum() - pe["delta"].sum()),
+                 f"gamma {_k(pe['gamma'].sum())}, vega {_k(pe['vega'].sum())}, correlation {_k(pe['correlation'].sum())}, "
+                 f"theta {_k(pe['theta'].sum())}"])
+    if score0 is not None:
+        b = res.baseline.daily
+        rows.append(["Risk score, average since January", f"{score[score.index >= '2026-01-01'].mean():.2f}",
+                     f"{score0[score0.index >= '2026-01-01'].mean():.2f} without the notes"])
+        rows.append(["Risk score today", f"{score.iloc[-1]:.2f}", f"{score0.iloc[-1]:.2f} without"])
+        rows.append(["Corr01 today", _k(d['corr01'].iloc[-1]), f"{_k(b['corr01'].iloc[-1])} without"])
+    return {"title": "Recycling: what the pitched notes did",
+            "paragraphs": ["Every week the desk pitches the one client note that most reduces its risk score (the sum of squared "
+                           "limit usages), among baskets the basket optimizer's six schemes build on tonight's implied vols. "
+                           "The desk quotes with its axes, the street without; the client takes the better price.",
+                           "Recycling is not free: the axe gives part of the spread back to the client, and the notes carry "
+                           "their own market risk once booked."],
+            "table": {"columns": ["", "With the notes", "Comparison"], "rows": rows}}
+
+
+def pitch_log_section(log: pd.DataFrame) -> dict:
+    rows = []
+    for r in log.tail(6).iloc[::-1].to_dict("records"):
+        if r["result"] != "accepted":
+            rows.append([str(r["date"])[:10], "–", "–", "–", None, "–", r["result"]])
+            continue
+        basket = " / ".join(f"{p.split(':')[0]} {float(p.split(':')[1]) * 100:.0f}" for p in str(r["basket"]).split(";"))
+        terms = (f"{r['target']:g}% cpn @ {r['desk_terms']:.1f}%" if r["note"] == "reverse convertible"
+                 else f"{r['desk_terms']:.1f}% part.")
+        street = f"{r['street_terms']:.1f}%"
+        rows.append([str(r["date"])[:10], r["client"], r["note"], basket, _num(r["size"] / 1e6, 0), f"{terms} vs {street}", r["result"]])
+    return {"title": "Pitch log, last six weeks",
+            "paragraphs": ["Reverse convertibles are quoted as the strike that pays the client's coupon (lower is better for "
+                           "the client), protected notes as a participation (higher is better). Street = the same note at mid, no axe."],
+            "table": {"columns": ["Date", "Client", "Note", "Basket (weights %)", "Size (m$)", "Desk vs street", "Result"], "rows": rows}}
+
+
 def build_sheet(res: BookResult) -> dict:
     d = res.daily
     last = d.index[-1]
@@ -88,24 +133,33 @@ def build_sheet(res: BookResult) -> dict:
     if model_today:
         warnings.append(f"no live chain captured today for {', '.join(model_today)}: marked by the model")
 
+    score = risk.score_history(res)
+    base = res.baseline
+    score0 = risk.score_history(base) if base is not None else None
+    log = res.pitch_log if res.pitch_log is not None else pd.DataFrame(res.pitches)
+    accepted = log[log["result"] == "accepted"] if not log.empty else log
+    pitched = res.positions[res.positions["id"].str.startswith("P")]
     biggest = max([(abs(r["usage"]), r["underlying"], r["usage"]) for _, r in ax.iterrows()] +
                   [(abs(corr["usage"]), "Correlation", corr["usage"])])
     headline = (f"{last:%A %d %B %Y}. The simulated book made {_k(today['pnl'])} today and {_m(today['total_pnl'])} since "
                 f"{d.index[0]:%B %Y} on {len(res.trades)} fictitious client trades ({int(today['live_trades'])} live). "
                 f"Net vega {_k(today['net_vega'])} per vol point; Corr01 {_k(corr['corr01'])} per correlation point "
                 f"({abs(corr['usage']) * 100:.0f}% of its limit), so the first axe is to {corr['direction']}.")
+    if score0 is not None and len(accepted):
+        headline += (f" The weekly pitches put {len(accepted)} basket notes on the book: its risk score averages "
+                     f"{score.mean():.2f} against {score0.mean():.2f} without them.")
 
     tiles = [
         tile("P&L today", today["pnl"] / 1e3, "k$", f"month to date {_k(month['pnl'].sum())}",
              d["pnl"] / 1e3, _tone(today["pnl"]), 0),
-        tile("P&L since inception", today["total_pnl"] / 1e6, "m$", f"since {d.index[0]:%d %b %Y}",
+        tile("P&L since inception", today["total_pnl"] / 1e6, "m$", f"since {d.index[0]:%d %b %Y}, {int(today['live_trades'])} live trades",
              d["total_pnl"] / 1e6, _tone(today["total_pnl"]), 2),
         tile("Net vega", today["net_vega"] / 1e3, "k$/pt", f"index {_k(today['index_vega'])}, singles {_k(today['single_vega'])}",
              d["net_vega"] / 1e3, "neutral", 0),
         tile("Corr01", corr["corr01"] / 1e3, "k$/pt", f"{abs(corr['usage']) * 100:.0f}% of the ${corr['limit'] / 1e3:.0f}k limit",
              d["corr01"] / 1e3, "neg" if abs(corr["usage"]) > 0.8 else "neutral", 0),
-        tile("Live trades", today["live_trades"], "trades", f"{len(res.trades)} booked since inception",
-             d["live_trades"], "neutral", 0),
+        tile("Risk score", score.iloc[-1], "", (f"{score0.iloc[-1]:.2f} without the pitched notes" if score0 is not None
+                                                else "sum of squared limit usages"), score, "neutral", 2),
         tile("Largest limit usage", abs(biggest[2]) * 100, "%", f"{biggest[1]}, {'long' if biggest[2] > 0 else 'short'}",
              None, "neg" if abs(biggest[2]) > 0.8 else "neutral", 0),
     ]
@@ -117,17 +171,19 @@ def build_sheet(res: BookResult) -> dict:
     ideas = []
     for r in rows[:4]:
         u = r["underlying"]
-        n_trades = int(sum(1 for t in res.positions.itertuples() if t.status == "live" and (u == "Correlation" and t.underlying == "SPX" or t.underlying == u)))
+        n_trades = int(sum(1 for t in res.positions.itertuples() if t.status == "live" and (u == "Correlation" and t.underlying in ("SPX", "BASKET") or t.underlying == u
+                                                                                    or t.underlying == "BASKET" and f"{u} " in t.trade)))
         if u == "Correlation":
             title = f"{r['direction'].capitalize()}: Corr01 {_k(r['vega'])} per point"
             instrument = "Worst-of or dispersion structures where the client sells correlation (step 2)"
             condition = f"index vega {_k(today['index_vega'])}, Corr01 at {abs(r['usage']) * 100:.0f}% of the limit"
             thesis = ("The client puts sold on the S&P 500 leave the desk short index vol with single-name vols unchanged, "
                       "which is short correlation: the book loses if stocks start moving together, as in a sell-off. "
-                      "The dispersion project measured that risk; this is the desk carrying it.")
+                      "The dispersion project measured that risk; this is the desk carrying it. The reverse convertibles pitched "
+                      "each week buy some of it back, the protected notes sell some more.")
             stats = {"expected": None, "expected_unit": "", "hit": _num(abs(r["usage"]) * 100, 0),
                      "worst": _num(r["vega"] / 1e3, 0), "worst_unit": "k$ per correlation point", "n": n_trades,
-                     "sample": "live index trades", "labels": {"expected": "Axe", "hit": "Limit used", "hit_unit": "of the Corr01 limit",
+                     "sample": "live index and basket trades", "labels": {"expected": "Axe", "hit": "Limit used", "hit_unit": "of the Corr01 limit",
                                                                 "worst": "Corr01", "sample": "Trades behind it"}}
         else:
             title = f"{r['direction'].capitalize()} on {u}: quote {r['axed_3m']:.1f} against a {r['mid_3m']:.1f} mid (3M ATM)"
@@ -146,12 +202,15 @@ def build_sheet(res: BookResult) -> dict:
 
     # ----- sections
     explain_rows = []
-    for k in ["new_deals", "delta", "hedge", "gamma", "vega", "theta", "hedge_costs", "unexplained"]:
+    for k in ["new_deals", "delta", "hedge", "gamma", "vega", "correlation", "theta", "hedge_costs", "unexplained"]:
         explain_rows.append([LINE_NAMES[k], _num(today[k] / 1e3, 1), _num(month[k].sum() / 1e3, 1), _num(d[k].sum() / 1e3, 1)])
     explain_rows.append(["Total", _num(today["pnl"] / 1e3, 1), _num(month["pnl"].sum() / 1e3, 1), _num(d["pnl"].sum() / 1e3, 1)])
     big = res.explain.loc[res.explain["unexplained"].abs().sort_values(ascending=False).index[:3]]
     jumps = []
     for r in big.itertuples():
+        if r.underlying not in m.spot:
+            jumps.append(f"{r.trade} on {r.date:%d %b} (basket note, {_k(r.unexplained)})")
+            continue
         s = m.spot[r.underlying]
         ret = s.loc[r.date] / s.shift(1).loc[r.date] - 1
         jumps.append(f"{r.trade} on {r.date:%d %b} ({r.underlying} {ret * 100:+.1f}%, {_k(r.unexplained)})")
@@ -162,6 +221,8 @@ def build_sheet(res: BookResult) -> dict:
              "Delta and its hedge cancel because the desk re-hedges every underlying at the close.",
              f"The largest unexplained days are earnings jumps, where a second-order expansion misses the convexity: {'; '.join(jumps)}."],
          "table": {"columns": ["Line", "Today", "Month to date", "Since inception"], "rows": explain_rows}},
+        recycling_section(res, score, score0, accepted, pitched, log),
+        pitch_log_section(log),
         {"title": "Risk by underlying",
          "paragraphs": ["Vega in k$ per vol point, gamma as the P&L of a 1% move, theta per day, after today's deals. "
                         "Delta is hedged to zero at every close; the column shows what the hedge offsets."],
@@ -194,6 +255,11 @@ def build_sheet(res: BookResult) -> dict:
         "The surface is a parametrisation: an ATM term structure borrowed from the VIX family beyond the live tenors and a linear "
         "skew in standardised moneyness, calibrated on the live 25-delta risk reversal.",
         "Variance swaps on single names are marked at ATM x 1.10, the ratio measured on the 50 chains; no cap is modelled.",
+        "Basket options are priced on a lognormal matched to the basket's first two moments, with each name's vol at its "
+        "strike and the Ledoit-Wolf correlation of the last year as the correlation mark: there is no listed market in "
+        "pairwise correlation of single names to mark it on.",
+        "The pitched notes are simulated: four fictitious clients, one pitch a week, the best price wins against a street "
+        "that quotes the same note at mid without axes. The clients' coupons, minimums and sizes are invented; the prices are not.",
         "No funding cost on cash or on the delta hedge, flat 4% rate, constant dividend yields.",
     ]
     return {
@@ -203,7 +269,8 @@ def build_sheet(res: BookResult) -> dict:
         "headline": headline, "tiles": tiles, "sections": sections, "ideas": ideas,
         "ideas_title": "Axes, ranked by limit usage",
         "charts": [_fig(charts.pnl_explain(res), "pnl_explain"), _fig(charts.vega_usage(ax, corr), "limits"),
-                   _fig(charts.vega_history(res), "vega_history"), _fig(charts.marks_history(res), "marks")],
+                   _fig(charts.vega_history(res), "vega_history"), _fig(charts.marks_history(res), "marks")]
+                  + ([_fig(charts.score_paths(score, score0), "risk_score")] if score0 is not None else []),
         "method": method, "caveats": caveats, "warnings": warnings,
         "links": {"repo": "https://github.com/lonb3k/trading-book",
                   "streamlit": "no separate app: this sheet is the book's front end"},

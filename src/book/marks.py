@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from .links import C_SINGLE_VS, RISK_FREE, basket_moments, sp_atm_vol
+from .links import C_SINGLE_VS, RISK_FREE, basket_moments, corr_from_cov, ledoit_wolf_cov, sp_atm_vol
 
 INDEX = "SPX"
 ANCHORS = [9, 30, 91, 182]           # VIX9D, VIX, VIX3M, VIX6M
@@ -52,6 +52,15 @@ class Marks:
     corr_factor: pd.Series               # d sigma_index / d rho, vol points per correlation point
     div_yield: dict = field(default_factory=dict)
     rate: float = RISK_FREE
+    corr: dict = field(default_factory=dict)   # date -> correlation matrix of the single names (Ledoit-Wolf)
+
+    def corr_matrix(self, d, names: list[str]) -> np.ndarray:
+        """Pairwise correlation mark between single names: the basket optimizer's Ledoit-Wolf estimate on
+        the trailing year of daily returns. Identity if no mark (synthetic tests)."""
+        c = self.corr.get(d)
+        if c is None:
+            return np.eye(len(names))
+        return c.loc[names, names].values
 
     @property
     def dates(self) -> pd.DatetimeIndex:
@@ -164,8 +173,16 @@ def build_marks(closes: pd.DataFrame, names: list[str], vixfam: pd.DataFrame, sk
         fallback = DEFAULT_BETA.get(c, DEFAULT_SINGLE_BETA) if pd.isna(med) else med
         beta[c] = live_beta[c].fillna(fallback)
 
+    # --- correlation marks between the single names: Ledoit-Wolf on the trailing 252 days
+    rets = np.log(top50[names] / top50[names].shift(1)).dropna()
+    corr = {}
+    for d in dates:
+        hist = rets[rets.index <= d].iloc[-252:]
+        if len(hist) >= 126:
+            corr[d] = corr_from_cov(ledoit_wolf_cov(hist)[0])
+
     keep = atm30.notna().all(axis=1) & spot.notna().all(axis=1)
     sel = lambda f: f.loc[keep]  # noqa: E731
     return Marks(spot=sel(spot), atm30=sel(atm30), atm90=sel(atm90), beta=sel(beta), source=sel(source),
                  model_atm30=sel(model), vixfam=vixfam.reindex(dates).ffill(limit=3).loc[keep],
-                 corr_factor=corr_factor.loc[keep], div_yield=div_yield)
+                 corr_factor=corr_factor.loc[keep], div_yield=div_yield, corr=corr)
