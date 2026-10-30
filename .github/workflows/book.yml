@@ -1,0 +1,44 @@
+name: Daily book run and morning sheet
+
+on:
+  schedule:
+    - cron: "0 23 * * 1-5"   # after the three sister projects (22:15, 22:30, 22:45 UTC) have captured their chains
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  book:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: trading_book
+      # The book is marked on the sister projects' code and live snapshots: check them out side by side.
+      - uses: actions/checkout@v4
+        with:
+          repository: lonb3k/vol-dashboard
+          path: vol_dashboard
+      - uses: actions/checkout@v4
+        with:
+          repository: lonb3k/dispersion
+          path: dispersion
+      - uses: actions/checkout@v4
+        with:
+          repository: lonb3k/basket-optimizer
+          path: basket_optimizer
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r trading_book/requirements.txt
+      - run: python -m pytest -q trading_book/tests
+      - run: python trading_book/scripts/run_book.py
+      - name: Commit marks, P&L and sheet
+        working-directory: trading_book
+        run: |
+          git config user.name "book-bot"
+          git config user.email "book-bot@localhost"
+          git add data sheet/latest.json
+          git diff --cached --quiet || git commit -m "Book run $(date -u +%F)"
+          git push
