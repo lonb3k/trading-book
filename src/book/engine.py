@@ -7,7 +7,8 @@ Every evening, for each trade alive the evening before:
     gamma       = 1/2 x Gamma x dS^2                         (baskets: spot revaluation minus delta,
                                                               because a basket has cross-gammas)
     vega        = Vega x (vol today - vol yesterday)         same strike, each evening's surface
-    correlation = Corr01 x (correlation today - yesterday)   baskets only, average pairwise mark
+    vanna       = notes only: the vol move revalued at today's spot, minus the vega line (the cross term)
+    correlation = Corr01 x (correlation today - yesterday)   baskets and notes, average pairwise mark
     theta       = repricing yesterday's position one day later, nothing else moved
     unexplained = actual - (delta + gamma + vega + correlation + theta)
 
@@ -30,11 +31,12 @@ import pandas as pd
 
 from .basket import BasketGreeks, basket_greeks, basket_price_at, basket_value, basket_vols
 from .marks import INDEX, Marks
+from .mc import NoteGreeks, NoteSpec, note_greeks, note_pv, note_vols, observation_dates, remaining, seed_of
 from .pricing import option_greeks, option_price, varswap_settle, varswap_value
 from .trades import Trade
 
 HEDGE_COST_BP = {"SPX": 1.0, "single": 2.0}
-LINES = ["new_deals", "delta", "gamma", "vega", "correlation", "theta", "unexplained", "hedge", "hedge_costs"]
+LINES = ["new_deals", "delta", "gamma", "vega", "vanna", "correlation", "theta", "unexplained", "hedge", "hedge_costs"]
 BUCKETS = [(0, 31, "<1M"), (31, 92, "1-3M"), (92, 183, "3-6M"), (183, 366, "6-12M"), (366, 10**6, ">1Y")]
 GREEKS = ["delta_units", "vega", "gamma_1pct", "theta"]
 
@@ -61,6 +63,11 @@ class Position:
     weights: np.ndarray | None = None
     ref: dict = field(default_factory=dict)
     greeks: BasketGreeks | None = None   # baskets: Greeks at the last close, reused as "yesterday's"
+    spec: NoteSpec | None = None         # notes: the Monte Carlo spec (paths drawn once)
+    done: int = 0                        # notes: observations already settled
+    deposit: float = 0.0                 # notes: the client's notional, on deposit at the risk-free rate
+    ng: NoteGreeks | None = None         # notes: Greeks at the last close
+    events: list = field(default_factory=list)
 
 
 @dataclass
@@ -109,9 +116,59 @@ def _basket_greeks(m: Marks, d, p: Position) -> BasketGreeks:
     return basket_greeks(m, d, **_basket_args(p, _t(p.trade.maturity, d)))
 
 
+def note_spec(m: Marks, d, tr: Trade) -> NoteSpec:
+    names = tr.note_names()
+    return NoteSpec(kind=tr.product, names=names, ref={n: m.spot.at[d, n] for n in names},
+                    obs=observation_dates(tr.trade_date, tr.tenor_months), coupon=tr.coupon, ki=tr.ki,
+                    call=tr.call or 1.0, notional=tr.notional, seed=seed_of(tr.id))
+
+
+def _note_value(m: Marks, d, p: Position) -> float:
+    return p.deposit - note_pv(m, d, p.spec, p.done)[0]
+
+
+def _settle_notes(m: Marks, d, p: Position) -> bool:
+    """Pay what observation dates up to d require, out of the deposit. True when the note has ended."""
+    spec, tr = p.spec, p.trade
+    while p.done < len(spec.obs) and spec.obs[p.done] <= d:
+        k = p.done + 1
+        last = k == len(spec.obs)
+        perf = {n: m.spot.at[d, n] / spec.ref[n] for n in spec.names}
+        if tr.product == "worst_of":
+            p.deposit -= spec.coupon * spec.notional
+            p.events.append(f"{d:%d %b %Y}: coupon {spec.coupon * 100:.2f}%")
+            if last:
+                w = min(perf.values())
+                red = 1.0 if w >= spec.ki else w
+                p.deposit -= red * spec.notional
+                p.events.append(f"{d:%d %b %Y}: redeemed at {red * 100:.1f}% (worst {w * 100:.1f}%)")
+        else:
+            x = perf[spec.names[0]]
+            if x >= spec.call:
+                pay = 1 + spec.coupon * k
+                p.deposit -= pay * spec.notional
+                p.events.append(f"{d:%d %b %Y}: called at {x * 100:.1f}%, paid {pay * 100:.2f}%")
+                p.done = len(spec.obs)
+                return True
+            if last:
+                red = 1.0 if x >= spec.ki else x
+                p.deposit -= red * spec.notional
+                p.events.append(f"{d:%d %b %Y}: matured at {x * 100:.1f}%, redeemed {red * 100:.1f}%")
+        p.done = k
+        if last:
+            return True
+    return False
+
+
 def book_position(m: Marks, d, tr: Trade) -> tuple[Position, float]:
     """Open a position at the client price. Returns it and the day-one P&L."""
     p = Position(trade=tr, booked=d)
+    if tr.is_note:
+        p.spec = note_spec(m, d, tr)
+        p.deposit = tr.notional                                   # the client pays the notional
+        p.value = _note_value(m, d, p)                            # the coupon was set to leave the desk a fee
+        p.ng = note_greeks(m, d, p.spec, p.done)
+        return p, p.value
     if tr.is_basket:
         p.names = list(tr.basket)
         p.weights = np.array([tr.basket[n] for n in p.names])
@@ -154,6 +211,19 @@ def aggregate(m: Marks, d, live: list[Position], refresh_baskets: bool = True) -
     basket_corr01 = 0.0
     for p in live:
         tr = p.trade
+        if tr.is_note:
+            if refresh_baskets or p.ng is None:
+                p.ng = note_greeks(m, d, p.spec, p.done)
+            g = p.ng
+            carry = p.deposit * m.rate / 365
+            tot = sum(abs(v) for v in g.vega.values()) or 1.0
+            for n in p.spec.names:
+                agg[n]["delta_units"] += g.delta[n]
+                agg[n]["vega"] += g.vega[n]
+                agg[n]["gamma_1pct"] += g.gamma_1pct[n]
+                agg[n]["theta"] += (g.theta + carry) * abs(g.vega[n]) / tot
+            basket_corr01 += g.corr01
+            continue
         if tr.is_basket:
             if refresh_baskets or p.greeks is None:
                 p.greeks = _basket_greeks(m, d, p)
@@ -205,6 +275,37 @@ def _explain_basket(m: Marks, prev, d, p: Position, spot, sp) -> tuple[dict, flo
     return e, v_now
 
 
+def _explain_note(m: Marks, prev, d, p: Position, spot, sp) -> tuple[dict, float, bool]:
+    """Greek lines of a note from prev to d; settles the observations that fall in between."""
+    g = p.ng if p.ng is not None else note_greeks(m, prev, p.spec, p.done)
+    spec = p.spec
+    days = (d - prev).days
+    carry = p.deposit * (np.exp(m.rate * days / 365) - 1)
+    p.deposit += carry
+    corr_prev = m.corr_matrix(prev, spec.names) if len(spec.names) > 1 else None
+    e = dict.fromkeys(["delta", "gamma", "vega", "vanna", "correlation", "theta"], 0.0)
+    e["delta"] = sum(g.delta[n] * (spot[n] - sp[n]) for n in spec.names)
+    moved = -note_pv(m, prev, spec, p.done, spots={n: spot[n] for n in spec.names}, vols=g.vols, corr=corr_prev)[0]
+    e["gamma"] = moved - g.value - e["delta"]
+    nxt = remaining(spec, prev, p.done)
+    asof = min(d, nxt[0] - pd.Timedelta(days=1)) if nxt else d
+    aged = -note_pv(m, prev, spec, p.done, asof=max(asof, prev), vols=g.vols, corr=corr_prev)[0]
+    e["theta"] = aged - g.value + carry
+    # vol move, revalued at today's spot before anything is settled (same observations as `moved`)
+    vols_now = note_vols(m, d, spec, d)
+    vega = sum(g.vega[n] * (vols_now[n] - g.vols[n]) * 100 for n in spec.names)
+    vol_moved = -note_pv(m, prev, spec, p.done, spots={n: spot[n] for n in spec.names}, vols=vols_now, corr=corr_prev)[0]
+    ended = _settle_notes(m, d, p)
+    if ended:
+        return e, p.deposit, True
+    e["vega"] = vega
+    e["vanna"] = (vol_moved - moved) - vega     # the cross term, exact even on a 15% jump
+    if len(spec.names) > 1:
+        off = ~np.eye(len(spec.names), dtype=bool)
+        e["correlation"] = g.corr01 * (m.corr_matrix(d, spec.names)[off].mean() - g.avg_corr) * 100
+    return e, _note_value(m, d, p), False
+
+
 Pitcher = Callable[[pd.Timestamp, Marks, dict, float, list], list]
 
 
@@ -240,8 +341,10 @@ def run_book(m: Marks, trades: list[Trade], until: pd.Timestamp | None = None, p
                 u = tr.underlying
                 v_prev = p.value
                 expired = d >= tr.maturity
-                e = dict.fromkeys(["delta", "gamma", "vega", "correlation", "theta"], 0.0)
-                if tr.is_basket:
+                e = dict.fromkeys(["delta", "gamma", "vega", "vanna", "correlation", "theta"], 0.0)
+                if tr.is_note:
+                    e, v_now, expired = _explain_note(m, prev, d, p, spot, sp)
+                elif tr.is_basket:
                     e, v_now = _explain_basket(m, prev, d, p, spot, sp)
                 elif tr.is_option:
                     ds = spot[u] - sp[u]
@@ -334,10 +437,18 @@ def run_book(m: Marks, trades: list[Trade], until: pd.Timestamp | None = None, p
         tr = p.trade
         row = {"id": tr.id, "client": tr.client, "trade": tr.label(), "underlying": tr.underlying,
                "booked": p.booked.date(), "maturity": tr.maturity.date(), "status": "live" if p.alive else "expired",
-               "value": p.value, "pnl": p.value + p.cash, "vega": 0.0, "delta_usd": 0.0, "note": tr.note}
+               "value": p.value, "pnl": p.value + p.cash, "vega": 0.0, "delta_usd": 0.0, "note": tr.note,
+               "events": "; ".join(p.events), "corr01": p.ng.corr01 if (p.alive and p.ng is not None) else 0.0,
+               "mc_stderr": p.ng.stderr if (p.alive and p.ng is not None) else 0.0}
         if p.alive:
             bucket = bucket_of((tr.maturity - last).days)
-            if tr.is_basket:
+            if tr.is_note:
+                g = p.ng
+                row["vega"] = sum(g.vega.values())
+                row["delta_usd"] = sum(g.delta[n] * m.spot.at[last, n] for n in p.spec.names)
+                for n in p.spec.names:
+                    vb.at[n, bucket] += g.vega[n]
+            elif tr.is_basket:
                 g = p.greeks
                 row["vega"] = sum(g.vega.values())
                 row["delta_usd"] = sum(g.delta[n] * m.spot.at[last, n] for n in p.names)

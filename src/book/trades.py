@@ -18,7 +18,7 @@ from .data import DATA_DIR
 BLOTTER = DATA_DIR / "trades.csv"
 GENERATED = DATA_DIR / "trades_generated.csv"
 COLUMNS = ["id", "trade_date", "client", "product", "underlying", "strike_pct", "tenor_months", "notional_usd",
-           "vega_usd", "desk_side", "basket", "trade_vol", "note"]
+           "vega_usd", "desk_side", "basket", "trade_vol", "coupon_pct_q", "ki_pct", "call_pct", "note"]
 
 # Half the bid-ask the desk charges, in vol points: client buys above mid, sells below mid.
 SPREAD = {"option": {"SPX": 0.4, "single": 1.0}, "varswap": {"SPX": 0.5, "single": 1.0}, "basket": {"single": 1.0}}
@@ -37,8 +37,16 @@ class Trade:
     vega: float | None      # variance swaps, USD per vol point
     sign: int               # +1 desk long, -1 desk short
     note: str
-    basket: dict = field(default_factory=dict)   # name -> weight, for basket options
+    basket: dict = field(default_factory=dict)   # name -> weight, for basket options (names only for worst-ofs)
     trade_vol: float | None = None               # basket vol the client dealt at (decimal), set at the pitch
+    tenor_months: int = 0
+    coupon: float | None = None                  # notes: coupon per quarter, fraction of notional
+    ki: float | None = None                      # notes: knock-in barrier, fraction of initial
+    call: float | None = None                    # autocalls: call barrier, fraction of initial
+
+    @property
+    def is_note(self) -> bool:
+        return self.product in ("autocall", "worst_of")
 
     @property
     def is_option(self) -> bool:
@@ -58,11 +66,20 @@ class Trade:
         kind = "option" if self.is_option else "varswap"
         return SPREAD[kind]["SPX" if self.underlying == "SPX" else "single"]
 
+    def note_names(self) -> list[str]:
+        return list(self.basket) if self.product == "worst_of" else [self.underlying]
+
     def basket_label(self) -> str:
         return " / ".join(f"{n} {w * 100:.0f}" for n, w in self.basket.items())
 
     def label(self) -> str:
         side = "long" if self.sign > 0 else "short"
+        if self.product == "autocall":
+            return (f"{side} {self.underlying} autocall {self.maturity:%b-%y} ({4 * self.coupon * 100:.2f}% a year, "
+                    f"call {self.call * 100:g}%, knock-in {self.ki * 100:g}%)")
+        if self.product == "worst_of":
+            return (f"{side} worst-of {'/'.join(self.basket)} {self.maturity:%b-%y} ({4 * self.coupon * 100:.2f}% a year, "
+                    f"knock-in {self.ki * 100:g}%)")
         if self.is_basket:
             kind = "call" if self.is_call else "put"
             return f"{side} basket {self.strike_pct:g}% {kind} {self.maturity:%b-%y} ({self.basket_label()})"
@@ -100,7 +117,11 @@ def _from_frame(df: pd.DataFrame) -> list[Trade]:
                          vega=None if get("vega_usd") is None else float(r["vega_usd"]),
                          sign=1 if r["desk_side"] == "long" else -1, note=r.get("note", "") or "",
                          basket=parse_basket(get("basket")),
-                         trade_vol=None if get("trade_vol") is None else float(r["trade_vol"])))
+                         trade_vol=None if get("trade_vol") is None else float(r["trade_vol"]),
+                         tenor_months=int(r["tenor_months"]),
+                         coupon=None if get("coupon_pct_q") is None else float(r["coupon_pct_q"]) / 100,
+                         ki=None if get("ki_pct") is None else float(r["ki_pct"]) / 100,
+                         call=None if get("call_pct") is None else float(r["call_pct"]) / 100))
     return out
 
 
@@ -115,4 +136,5 @@ def to_row(t: Trade, tenor_months: int) -> dict:
     return {"id": t.id, "trade_date": t.trade_date.date(), "client": t.client, "product": t.product,
             "underlying": t.underlying, "strike_pct": t.strike_pct, "tenor_months": tenor_months,
             "notional_usd": t.notional, "vega_usd": None, "desk_side": "long" if t.sign > 0 else "short",
-            "basket": format_basket(t.basket), "trade_vol": round(t.trade_vol, 6), "note": t.note}
+            "basket": format_basket(t.basket), "trade_vol": round(t.trade_vol, 6), "coupon_pct_q": None, "ki_pct": None,
+            "call_pct": None, "note": t.note}

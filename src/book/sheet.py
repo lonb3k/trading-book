@@ -16,7 +16,7 @@ from .engine import LINES, BookResult
 
 SPARK_POINTS = 60
 LINE_NAMES = {"new_deals": "New deals (day-one margin)", "delta": "Delta", "hedge": "Delta hedge",
-              "gamma": "Gamma", "vega": "Vega", "correlation": "Correlation", "theta": "Theta", "hedge_costs": "Hedging costs",
+              "gamma": "Gamma", "vega": "Vega", "vanna": "Vanna (notes)", "correlation": "Correlation", "theta": "Theta", "hedge_costs": "Hedging costs",
               "unexplained": "Unexplained"}
 
 
@@ -71,6 +71,34 @@ def _k(v: float, digits: int = 0) -> str:
 def _m(v: float) -> str:
     sign = "+" if v > 0 else "−" if v < 0 else ""
     return f"{sign}${abs(v) / 1e6:,.2f}m"
+
+
+def notes_section(res) -> dict:
+    notes = [t for t in res.trades if t.is_note]
+    pos = res.positions.set_index("id")
+    rows = []
+    for t in notes:
+        if t.id not in pos.index:
+            continue
+        p = pos.loc[t.id]
+        status = "called" if "called" in p["events"] else p["status"]
+        rows.append([t.id, t.client, t.label().split(" (")[0].replace("short ", ""), f"{4 * t.coupon * 100:.2f}%", status,
+                     _num(p["pnl"] / 1e3, 0), _num(p["vega"] / 1e3, 1), _num(p["corr01"] / 1e3, 1),
+                     _num(p["mc_stderr"] / 1e3, 0), p["events"].split("; ")[-1] if p["events"] else "–"])
+    e = res.explain[res.explain["trade"].isin([t.id for t in notes])]
+    gross = e[["delta", "gamma", "vega", "vanna", "theta"]].abs().sum().sum()
+    share = e["unexplained"].abs().sum() / gross * 100 if gross else 0.0
+    return {"title": "Exotic notes, priced by Monte Carlo",
+            "paragraphs": ["The desk sells the notes: the client's notional sits on deposit at the risk-free rate, the desk owes "
+                           "the payoff. Each is revalued every evening on 20,000 correlated paths drawn once per trade, so the "
+                           "P&L moves with the market, not the random numbers. Coupons were solved on the trade date to leave "
+                           "the desk a 1.5-2% fee.",
+                           f"Autocalls leave the desk long vol (the knock-in put the client sold) and short the digital calls; "
+                           f"worst-ofs leave it long vol and short correlation. A vanna line catches the vega moving with spot. "
+                           f"Unexplained P&L on the notes: {share:.1f}% of the gross Greek P&L, mostly on observation days, "
+                           f"when the call digital resolves."],
+            "table": {"columns": ["Id", "Client", "Note", "Coupon a year", "Status", "P&L (k$)", "Vega (k$/pt)",
+                                  "Corr01 (k$/pt)", "MC error (k$)", "Last event"], "rows": rows}}
 
 
 def recycling_section(res, score, score0, accepted, pitched, log) -> dict:
@@ -142,7 +170,7 @@ def build_sheet(res: BookResult) -> dict:
     biggest = max([(abs(r["usage"]), r["underlying"], r["usage"]) for _, r in ax.iterrows()] +
                   [(abs(corr["usage"]), "Correlation", corr["usage"])])
     headline = (f"{last:%A %d %B %Y}. The simulated book made {_k(today['pnl'])} today and {_m(today['total_pnl'])} since "
-                f"{d.index[0]:%B %Y} on {len(res.trades)} fictitious client trades ({int(today['live_trades'])} live). "
+                f"{d.index[0]:%B %Y} on {len(res.positions)} fictitious client trades ({int(today['live_trades'])} live). "
                 f"Net vega {_k(today['net_vega'])} per vol point; Corr01 {_k(corr['corr01'])} per correlation point "
                 f"({abs(corr['usage']) * 100:.0f}% of its limit), so the first axe is to {corr['direction']}.")
     if score0 is not None and len(accepted):
@@ -202,7 +230,7 @@ def build_sheet(res: BookResult) -> dict:
 
     # ----- sections
     explain_rows = []
-    for k in ["new_deals", "delta", "hedge", "gamma", "vega", "correlation", "theta", "hedge_costs", "unexplained"]:
+    for k in ["new_deals", "delta", "hedge", "gamma", "vega", "vanna", "correlation", "theta", "hedge_costs", "unexplained"]:
         explain_rows.append([LINE_NAMES[k], _num(today[k] / 1e3, 1), _num(month[k].sum() / 1e3, 1), _num(d[k].sum() / 1e3, 1)])
     explain_rows.append(["Total", _num(today["pnl"] / 1e3, 1), _num(month["pnl"].sum() / 1e3, 1), _num(d["pnl"].sum() / 1e3, 1)])
     big = res.explain.loc[res.explain["unexplained"].abs().sort_values(ascending=False).index[:3]]
@@ -221,6 +249,7 @@ def build_sheet(res: BookResult) -> dict:
              "Delta and its hedge cancel because the desk re-hedges every underlying at the close.",
              f"The largest unexplained days are earnings jumps, where a second-order expansion misses the convexity: {'; '.join(jumps)}."],
          "table": {"columns": ["Line", "Today", "Month to date", "Since inception"], "rows": explain_rows}},
+        notes_section(res),
         recycling_section(res, score, score0, accepted, pitched, log),
         pitch_log_section(log),
         {"title": "Risk by underlying",
@@ -258,6 +287,9 @@ def build_sheet(res: BookResult) -> dict:
         "Basket options are priced on a lognormal matched to the basket's first two moments, with each name's vol at its "
         "strike and the Ledoit-Wolf correlation of the last year as the correlation mark: there is no listed market in "
         "pairwise correlation of single names to mark it on.",
+        "Autocalls and worst-ofs are priced on correlated lognormal paths with one flat vol per name, its mark at the "
+        "knock-in strike: the skew enters through that one number, a local-vol model would let the vol move with spot. "
+        "Monte Carlo error is about 0.1-0.2% of notional, and the same paths are reused every evening.",
         "The pitched notes are simulated: four fictitious clients, one pitch a week, the best price wins against a street "
         "that quotes the same note at mid without axes. The clients' coupons, minimums and sizes are invented; the prices are not.",
         "No funding cost on cash or on the delta hedge, flat 4% rate, constant dividend yields.",

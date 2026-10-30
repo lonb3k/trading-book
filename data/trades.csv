@@ -1,17 +1,21 @@
-id,trade_date,client,product,underlying,strike_pct,tenor_months,notional_usd,vega_usd,desk_side,note
-T01,2025-11-03,Pension fund A,put,SPX,90,6,100000000,,short,Client buys a six-month tail hedge on its equity allocation
-T02,2025-11-17,Hedge fund B,varswap,SPX,,3,,100000,short,Client buys three-month S&P 500 variance
-T03,2025-12-08,Private bank C,put,NVDA,80,6,25000000,,long,Reverse convertibles: the bank's clients sell the put through the note
-T04,2026-01-12,Private bank C,put,AAPL,85,12,30000000,,long,Reverse convertibles
-T05,2026-02-09,Private bank D,put,TSLA,75,9,15000000,,long,Reverse convertibles
-T06,2026-03-16,Pension fund A,put,SPX,95,12,75000000,,short,Client rolls its tail hedge to one year
-T07,2026-04-13,Hedge fund E,varswap,SPX,,9,,150000,long,Client buys dispersion: desk buys index variance (leg 1 of 5)
-T08,2026-04-13,Hedge fund E,varswap,AAPL,,9,,40000,short,Client buys dispersion: desk sells single-name variance (leg 2 of 5)
-T09,2026-04-13,Hedge fund E,varswap,MSFT,,9,,40000,short,Client buys dispersion (leg 3 of 5)
-T10,2026-04-13,Hedge fund E,varswap,NVDA,,9,,40000,short,Client buys dispersion (leg 4 of 5)
-T11,2026-04-13,Hedge fund E,varswap,AMZN,,9,,40000,short,Client buys dispersion (leg 5 of 5)
-T12,2026-06-01,Asset manager F,call,MSFT,105,3,40000000,,long,Call overwriting: client sells three-month upside
-T13,2026-07-06,Private bank C,put,AMZN,85,6,20000000,,long,Reverse convertibles
-T14,2026-08-17,Private bank D,put,NVDA,80,6,30000000,,long,Reverse convertibles
-T15,2026-09-14,Macro fund G,put,SPX,97,3,80000000,,short,Client buys downside protection into year end
-T16,2026-10-12,Private bank C,put,TSLA,80,6,20000000,,long,Reverse convertibles
+id,trade_date,client,product,underlying,strike_pct,tenor_months,notional_usd,vega_usd,desk_side,basket,trade_vol,coupon_pct_q,ki_pct,call_pct,note
+T01,2025-11-03,Pension fund A,put,SPX,90.0,6,100000000.0,,short,,,,,,Client buys a six-month tail hedge on its equity allocation
+T02,2025-11-17,Hedge fund B,varswap,SPX,,3,,100000.0,short,,,,,,Client buys three-month S&P 500 variance
+T03,2025-12-08,Private bank C,put,NVDA,80.0,6,25000000.0,,long,,,,,,Reverse convertibles: the bank's clients sell the put through the note
+T04,2026-01-12,Private bank C,put,AAPL,85.0,12,30000000.0,,long,,,,,,Reverse convertibles
+T05,2026-02-09,Private bank D,put,TSLA,75.0,9,15000000.0,,long,,,,,,Reverse convertibles
+T06,2026-03-16,Pension fund A,put,SPX,95.0,12,75000000.0,,short,,,,,,Client rolls its tail hedge to one year
+T07,2026-04-13,Hedge fund E,varswap,SPX,,9,,150000.0,long,,,,,,Client buys dispersion: desk buys index variance (leg 1 of 5)
+T08,2026-04-13,Hedge fund E,varswap,AAPL,,9,,40000.0,short,,,,,,Client buys dispersion: desk sells single-name variance (leg 2 of 5)
+T09,2026-04-13,Hedge fund E,varswap,MSFT,,9,,40000.0,short,,,,,,Client buys dispersion (leg 3 of 5)
+T10,2026-04-13,Hedge fund E,varswap,NVDA,,9,,40000.0,short,,,,,,Client buys dispersion (leg 4 of 5)
+T11,2026-04-13,Hedge fund E,varswap,AMZN,,9,,40000.0,short,,,,,,Client buys dispersion (leg 5 of 5)
+T12,2026-06-01,Asset manager F,call,MSFT,105.0,3,40000000.0,,long,,,,,,Call overwriting: client sells three-month upside
+T13,2026-07-06,Private bank C,put,AMZN,85.0,6,20000000.0,,long,,,,,,Reverse convertibles
+T14,2026-08-17,Private bank D,put,NVDA,80.0,6,30000000.0,,long,,,,,,Reverse convertibles
+T15,2026-09-14,Macro fund G,put,SPX,97.0,3,80000000.0,,short,,,,,,Client buys downside protection into year end
+T16,2026-10-12,Private bank C,put,TSLA,80.0,6,20000000.0,,long,,,,,,Reverse convertibles
+T17,2026-01-12,Private bank C,autocall,SPX,,24,50000000.0,,short,,,2.3488,60,100.0,"Autocall sold to the bank's clients: quarterly calls at 100%, snowball coupon, knock-in 60% at maturity; coupon set for a 2% fee"
+T18,2026-06-15,Private bank D,worst_of,WORST_OF,,12,20000000.0,,short,NVDA:0.3333;TSLA:0.3333;AMZN:0.3333,,6.9738,60,,"Worst-of reverse convertible: quarterly coupon, knock-in 60% on the worst name at maturity; coupon set for a 1.5% fee"
+T19,2026-09-28,Private bank C,autocall,SPX,,24,50000000.0,,short,,,2.4089,60,100.0,"Autocall sold to the bank's clients: quarterly calls at 100%, snowball coupon, knock-in 60% at maturity; coupon set for a 2% fee"
+T20,2026-10-19,Retail distributor E,worst_of,WORST_OF,,12,15000000.0,,short,AAPL:0.3333;MSFT:0.3333;AMZN:0.3333,,5.705,65,,"Worst-of reverse convertible: quarterly coupon, knock-in 65% on the worst name at maturity; coupon set for a 1.5% fee"
