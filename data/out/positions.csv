@@ -31,23 +31,23 @@ P260914,Private bank D,long basket 87.63% put Sep-27 (AAPL 40 / MSFT 30 / AMZN 3
 P260928,Insurer H,short basket 100% call Sep-27 (AAPL 60 / AMZN 31 / TSLA 9),BASKET,2026-09-28,2027-09-28,live,-2238435.98,366207.4,-53873.03,-13241924.55,Capital-protected note pitched on 28 Sep 2026: 26.3% participation against 26.1% on the street (minimum 22%); Min variance weights; risk score 1.25 to 0.87,,0.0,0.0
 P261005,Private bank C,long basket 92.11% put Oct-27 (AAPL 56 / NVDA 22 / MSFT 23),BASKET,2026-10-05,2027-10-05,live,381746.04,-139052.58,22953.44,-2469181.16,Reverse convertible pitched on 05 Oct 2026: 9% coupon struck at 92.1% against 92.5% on the street; HRP weights; risk score 0.69 to 0.57,,0.0,0.0
 P261019,Insurer H,short basket 100% call Oct-27 (AAPL 25 / MSFT 25 / AMZN 25 / TSLA 25),BASKET,2026-10-19,2027-10-19,live,-4160453.96,1370616.91,-99160.65,-24464629.3,Capital-protected note pitched on 19 Oct 2026: 24.7% participation against 24.6% on the street (minimum 22%); Equal weight weights; risk score 4.00 to 2.10,,0.0,0.0
-T04,Private bank C,long AAPL 85% put Jan-27,AAPL,2026-01-12,2027-01-12,live,4437.56,-838403.38,1247.42,-88255.95,Reverse convertibles,,0.0,0.0
-T05,Private bank D,long TSLA 75% put Nov-26,TSLA,2026-02-09,2026-11-09,live,71.57,-871442.12,23.75,-3862.9,Reverse convertibles,,0.0,0.0
+T04,Private bank C,long AAPL 85% put Jan-27,AAPL,2026-01-12,2027-01-12,live,4437.56,-849539.73,1247.42,-88255.95,Reverse convertibles,,0.0,0.0
+T05,Private bank D,long TSLA 75% put Nov-26,TSLA,2026-02-09,2026-11-09,live,71.57,-876669.42,23.75,-3862.9,Reverse convertibles,,0.0,0.0
 T06,Pension fund A,short SPX 95% put Mar-27,SPX,2026-03-16,2027-03-16,live,-505005.08,3489393.4,-81082.22,7245686.06,Client rolls its tail hedge to one year,,0.0,0.0
 T07,Hedge fund E,long SPX variance swap Jan-27,SPX,2026-04-13,2027-01-13,live,-922330.59,-922330.59,39490.22,0.0,Client buys dispersion: desk buys index variance (leg 1 of 5),,0.0,0.0
-T08,Hedge fund E,short AAPL variance swap Jan-27,AAPL,2026-04-13,2027-01-13,live,242274.79,242274.79,-9433.77,0.0,Client buys dispersion: desk sells single-name variance (leg 2 of 5),,0.0,0.0
-T09,Hedge fund E,short MSFT variance swap Jan-27,MSFT,2026-04-13,2027-01-13,live,400685.35,400685.35,-7242.64,0.0,Client buys dispersion (leg 3 of 5),,0.0,0.0
-T10,Hedge fund E,short NVDA variance swap Jan-27,NVDA,2026-04-13,2027-01-13,live,324122.09,324122.09,-10085.3,0.0,Client buys dispersion (leg 4 of 5),,0.0,0.0
-T11,Hedge fund E,short AMZN variance swap Jan-27,AMZN,2026-04-13,2027-01-13,live,234490.27,234490.27,-11285.0,0.0,Client buys dispersion (leg 5 of 5),,0.0,0.0
-T13,Private bank C,long AMZN 85% put Jan-27,AMZN,2026-07-06,2027-01-06,live,360689.43,-607981.66,21743.05,-3405335.34,Reverse convertibles,,0.0,0.0
-T14,Private bank D,long NVDA 80% put Feb-27,NVDA,2026-08-17,2027-02-17,live,911729.99,-145216.87,45444.74,-6266403.22,Reverse convertibles,,0.0,0.0
+T08,Hedge fund E,short AAPL variance swap Jan-27,AAPL,2026-04-13,2027-01-13,live,243566.28,243566.28,-9422.63,0.0,Client buys dispersion: desk sells single-name variance (leg 2 of 5),,0.0,0.0
+T09,Hedge fund E,short MSFT variance swap Jan-27,MSFT,2026-04-13,2027-01-13,live,402330.1,402330.1,-7234.03,0.0,Client buys dispersion (leg 3 of 5),,0.0,0.0
+T10,Hedge fund E,short NVDA variance swap Jan-27,NVDA,2026-04-13,2027-01-13,live,326043.75,326043.75,-10073.28,0.0,Client buys dispersion (leg 4 of 5),,0.0,0.0
+T11,Hedge fund E,short AMZN variance swap Jan-27,AMZN,2026-04-13,2027-01-13,live,236286.44,236286.44,-11271.58,0.0,Client buys dispersion (leg 5 of 5),,0.0,0.0
+T13,Private bank C,long AMZN 85% put Jan-27,AMZN,2026-07-06,2027-01-06,live,360689.43,-615840.63,21743.05,-3405335.34,Reverse convertibles,,0.0,0.0
+T14,Private bank D,long NVDA 80% put Feb-27,NVDA,2026-08-17,2027-02-17,live,911729.99,-155568.31,45444.74,-6266403.22,Reverse convertibles,,0.0,0.0
 T15,Macro fund G,short SPX 97% put Dec-26,SPX,2026-09-14,2026-12-14,live,-854272.72,531883.63,-96263.27,23438330.19,Client buys downside protection into year end,,0.0,0.0
-T16,Private bank C,long TSLA 80% put Apr-27,TSLA,2026-10-12,2027-04-12,live,416264.84,-818990.29,28514.56,-2557566.72,Reverse convertibles,,0.0,0.0
+T16,Private bank C,long TSLA 80% put Apr-27,TSLA,2026-10-12,2027-04-12,live,416264.84,-828706.29,28514.56,-2557566.72,Reverse convertibles,,0.0,0.0
 T18,Private bank D,"short worst-of NVDA/TSLA/AMZN Jun-27 (27.90% a year, knock-in 60%)",WORST_OF,2026-06-15,2027-06-15,live,-2398288.25,-2398288.25,141987.52,-9162202.49,"Worst-of reverse convertible: quarterly coupon, knock-in 60% on the worst name at maturity; coupon set for a 1.5% fee",15 Sep 2026: coupon 6.97%,-10390.5,29547.79
 T19,Private bank C,"short SPX autocall Sep-28 (9.64% a year, call 100%, knock-in 60%)",SPX,2026-09-28,2028-09-28,live,1100274.29,1100274.29,166569.08,-12831785.94,"Autocall sold to the bank's clients: quarterly calls at 100%, snowball coupon, knock-in 60% at maturity; coupon set for a 2% fee",,0.0,49007.92
 T20,Retail distributor E,"short worst-of AAPL/MSFT/AMZN Oct-27 (22.82% a year, knock-in 65%)",WORST_OF,2026-10-19,2027-10-19,live,-540209.74,-540209.74,135816.17,-7747654.25,"Worst-of reverse convertible: quarterly coupon, knock-in 65% on the worst name at maturity; coupon set for a 1.5% fee",,-7442.23,22850.4
 T01,Pension fund A,short SPX 90% put May-26,SPX,2025-11-03,2026-05-01,expired,0.0,1836462.28,0.0,0.0,Client buys a six-month tail hedge on its equity allocation,,0.0,0.0
 T02,Hedge fund B,short SPX variance swap Feb-26,SPX,2025-11-17,2026-02-17,expired,0.0,902458.44,0.0,0.0,Client buys three-month S&P 500 variance,,0.0,0.0
-T03,Private bank C,long NVDA 80% put Jun-26,NVDA,2025-12-08,2026-06-08,expired,0.0,-958208.07,0.0,0.0,Reverse convertibles: the bank's clients sell the put through the note,,0.0,0.0
-T12,Asset manager F,long MSFT 105% call Sep-26,MSFT,2026-06-01,2026-09-01,expired,0.0,-737011.85,0.0,0.0,Call overwriting: client sells three-month upside,,0.0,0.0
+T03,Private bank C,long NVDA 80% put Jun-26,NVDA,2025-12-08,2026-06-08,expired,0.0,-967948.45,0.0,0.0,Reverse convertibles: the bank's clients sell the put through the note,,0.0,0.0
+T12,Asset manager F,long MSFT 105% call Sep-26,MSFT,2026-06-01,2026-09-01,expired,0.0,-752459.63,0.0,0.0,Call overwriting: client sells three-month upside,,0.0,0.0
 T17,Private bank C,"short SPX autocall Jan-28 (9.40% a year, call 100%, knock-in 60%)",SPX,2026-01-12,2028-01-12,expired,0.0,-1358294.75,0.0,0.0,"Autocall sold to the bank's clients: quarterly calls at 100%, snowball coupon, knock-in 60% at maturity; coupon set for a 2% fee","10 Jul 2026: called at 108.6%, paid 104.70%",0.0,0.0
