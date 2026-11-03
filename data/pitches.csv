@@ -1,44 +1,45 @@
 date,score_before,notes_quoted,notes_winnable,client,note,target,basket,scheme,size,desk_terms,street_terms,terms_unit,basket_vol_mid,basket_vol_desk,score_after,corr01,result,trade,strike_pct
-2026-01-05,1.8135,212,100,Private bank D,reverse convertible,7.0,AAPL:0.2500;MSFT:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,10000000.0,76.51,76.98,% strike,36.17,35.62,1.7604,4352.0,accepted,P260105,76.51
-2026-01-12,3.656,212,57,Insurer H,capital-protected note,22.0,AAPL:0.6000;NVDA:0.3179;TSLA:0.0821,Min variance,40000000.0,24.22,23.69,% participation,31.18,31.35,0.0854,-20149.0,accepted,P260112,100.0
-2026-01-20,0.1757,220,43,Asset manager F,capital-protected note,25.0,AAPL:0.4534;MSFT:0.3566;AMZN:0.1899,HRP,10000000.0,30.29,30.11,% participation,23.46,24.28,0.0598,-4322.0,accepted,P260120,100.0
-2026-01-26,0.0854,212,3,Private bank D,reverse convertible,7.0,NVDA:0.3235;MSFT:0.6000;TSLA:0.0765,Min variance,10000000.0,75.06,75.18,% strike,37.91,37.02,0.0522,3540.0,accepted,P260126,75.06
-2026-02-02,0.1383,220,13,Private bank D,reverse convertible,7.0,AAPL:0.6310;AMZN:0.2047;TSLA:0.1643,HRP,10000000.0,80.88,81.01,% strike,32.12,31.23,0.0839,3710.0,accepted,P260202,80.88
-2026-02-09,0.6615,240,21,Insurer H,capital-protected note,22.0,AAPL:0.3333;MSFT:0.3333;TSLA:0.3333,Equal weight,20000000.0,22.56,22.37,% participation,33.61,34.29,0.4066,-11340.0,accepted,P260209,100.0
-2026-02-17,0.3056,244,19,Private bank D,reverse convertible,7.0,AAPL:0.6000;NVDA:0.1642;MSFT:0.2358,Min variance,10000000.0,83.76,83.94,% strike,29.14,28.29,0.2068,3386.0,accepted,P260217,83.76
-2026-02-23,0.2483,240,4,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-03-02,0.1981,244,0,,,,,,,,,,,,,,no pitch: no winnable note,,
-2026-03-09,0.2525,256,0,,,,,,,,,,,,,,no pitch: no winnable note,,
-2026-03-16,1.2232,256,128,Private bank C,reverse convertible,9.0,NVDA:0.3333;MSFT:0.3333;AMZN:0.3333,Equal weight,10000000.0,90.14,90.55,% strike,28.97,28.38,1.1303,4553.0,accepted,P260316,90.14
-2026-03-23,1.0795,256,110,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-03-30,1.283,260,31,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-04-06,0.7565,256,106,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-04-13,2.3386,384,183,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,30000000.0,89.11,89.56,% strike,29.93,29.38,0.9684,15558.0,accepted,P260413,89.11
-2026-04-20,1.3977,384,41,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,30000000.0,88.22,88.36,% strike,31.37,30.51,0.8654,16429.0,accepted,P260420,88.22
-2026-04-27,1.1458,384,65,Insurer H,capital-protected note,22.0,AAPL:0.2500;NVDA:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,20000000.0,22.83,22.5,% participation,32.95,33.38,1.0846,-17965.0,accepted,P260427,100.0
-2026-05-04,0.7797,256,30,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,20000000.0,90.92,91.03,% strike,28.33,27.44,0.4945,10681.0,accepted,P260504,90.92
-2026-05-11,0.5484,256,33,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-05-18,0.4785,384,4,Private bank C,reverse convertible,9.0,AAPL:0.6000;AMZN:0.3169;TSLA:0.0831,Min variance,10000000.0,92.0,92.12,% strike,27.27,26.39,0.3275,4441.0,accepted,P260518,92.0
-2026-05-26,0.2672,380,18,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-06-01,2.1483,376,87,Insurer H,capital-protected note,22.0,MSFT:0.4483;AMZN:0.4157;TSLA:0.1361,Min variance,20000000.0,22.07,21.82,% participation,34.51,35.04,1.4617,-14504.0,accepted,P260601,100.0
-2026-06-08,0.6431,384,51,Private bank C,reverse convertible,9.0,NVDA:0.2460;AMZN:0.5532;TSLA:0.2007,HRP,20000000.0,88.2,88.47,% strike,31.36,30.64,0.2544,11019.0,accepted,P260608,88.2
-2026-06-15,3.7313,384,142,Insurer H,capital-protected note,22.0,AAPL:0.3333;NVDA:0.3333;TSLA:0.3333,Equal weight,40000000.0,22.03,21.72,% participation,34.44,34.87,1.2319,-28679.0,accepted,P260615,100.0
-2026-06-22,1.7608,384,129,Private bank D,reverse convertible,7.0,AAPL:0.5344;MSFT:0.3211;TSLA:0.1446,HRP,20000000.0,83.85,84.33,% strike,28.77,28.2,1.5036,8896.0,accepted,P260622,83.85
-2026-06-29,1.6828,384,29,Insurer H,capital-protected note,22.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,40000000.0,24.25,24.05,% participation,30.45,31.15,0.7378,-26970.0,accepted,P260629,100.0
-2026-07-06,2.7083,384,192,Private bank C,reverse convertible,9.0,AAPL:0.4051;NVDA:0.2022;MSFT:0.2641;TSLA:0.1286,HRP,30000000.0,83.91,84.85,% strike,35.06,35.02,1.8962,22698.0,accepted,P260706,83.91
-2026-07-13,1.8559,384,184,Private bank C,reverse convertible,9.0,AAPL:0.6000;NVDA:0.2795;TSLA:0.1205,Min variance,10000000.0,83.83,84.43,% strike,35.59,35.19,1.7211,5378.0,accepted,P260713,83.83
-2026-07-20,1.8727,384,187,Private bank D,reverse convertible,7.0,AAPL:0.5225;NVDA:0.1937;MSFT:0.2838,HRP,10000000.0,80.55,81.13,% strike,31.93,31.46,1.7966,4593.0,accepted,P260720,80.55
-2026-07-27,2.0736,360,159,Private bank D,reverse convertible,7.0,AAPL:0.4102;NVDA:0.2640;MSFT:0.3258,Max diversification,10000000.0,82.0,82.49,% strike,30.59,30.04,2.0528,4920.0,accepted,P260727,82.0
-2026-08-03,3.0429,384,175,Private bank D,reverse convertible,7.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,10000000.0,78.13,78.61,% strike,34.61,34.06,3.0177,5151.0,accepted,P260803,78.13
-2026-08-10,2.1789,384,172,Private bank D,reverse convertible,7.0,AAPL:0.6000;NVDA:0.3227;TSLA:0.0773,Min variance,10000000.0,80.66,81.1,% strike,32.06,31.45,2.1324,4043.0,accepted,P260810,80.66
-2026-08-17,3.1609,384,10,Insurer H,capital-protected note,22.0,NVDA:0.3919;MSFT:0.2512;AMZN:0.2756;TSLA:0.0812,Min variance,40000000.0,22.52,22.39,% participation,33.27,34.05,1.7344,-34608.0,accepted,P260817,100.0
-2026-08-24,1.8813,384,192,Private bank D,reverse convertible,7.0,AAPL:0.3333;MSFT:0.3333;AMZN:0.3333,Equal weight,10000000.0,82.46,83.04,% strike,30.05,29.59,1.8131,4941.0,accepted,P260824,82.46
-2026-08-31,1.7971,384,192,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,20000000.0,92.25,92.91,% strike,26.35,26.02,1.4149,11751.0,accepted,P260831,92.25
-2026-09-08,1.3214,384,192,Private bank D,reverse convertible,7.0,AAPL:0.2500;NVDA:0.2500;MSFT:0.2500;AMZN:0.2500,Equal weight,10000000.0,86.29,86.83,% strike,26.44,25.94,1.3103,6299.0,accepted,P260908,86.29
-2026-09-14,3.8593,384,190,Private bank D,reverse convertible,7.0,AAPL:0.3964;MSFT:0.3047;AMZN:0.2989,Inverse vol,20000000.0,87.63,88.19,% strike,25.07,24.58,3.6852,9627.0,accepted,P260914,87.63
-2026-09-21,3.1232,384,186,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-09-28,1.2468,384,66,Insurer H,capital-protected note,22.0,AAPL:0.6000;AMZN:0.3101;TSLA:0.0899,Min variance,20000000.0,26.27,26.13,% participation,27.66,28.48,0.8717,-11665.0,accepted,P260928,100.0
-2026-10-05,0.6885,384,186,Private bank C,reverse convertible,9.0,AAPL:0.5552;NVDA:0.2185;MSFT:0.2263,HRP,10000000.0,92.11,92.48,% strike,26.8,26.17,0.5737,5621.0,accepted,P261005,92.11
-2026-10-12,1.5232,384,130,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
-2026-10-19,3.9979,384,80,Insurer H,capital-protected note,22.0,AAPL:0.2500;MSFT:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,40000000.0,24.74,24.63,% participation,29.79,30.63,2.0971,-35219.0,accepted,P261019,100.0
-2026-10-26,2.8736,384,192,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-01-05 00:00:00,1.8135,212,100,Private bank D,reverse convertible,7.0,AAPL:0.2500;MSFT:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,10000000.0,76.51,76.98,% strike,36.17,35.62,1.7604,4352.0,accepted,P260105,76.51
+2026-01-12 00:00:00,3.656,212,57,Insurer H,capital-protected note,22.0,AAPL:0.6000;NVDA:0.3179;TSLA:0.0821,Min variance,40000000.0,24.22,23.69,% participation,31.18,31.35,0.0854,-20149.0,accepted,P260112,100.0
+2026-01-20 00:00:00,0.1757,220,43,Asset manager F,capital-protected note,25.0,AAPL:0.4534;MSFT:0.3566;AMZN:0.1899,HRP,10000000.0,30.29,30.11,% participation,23.46,24.28,0.0598,-4322.0,accepted,P260120,100.0
+2026-01-26 00:00:00,0.0854,212,3,Private bank D,reverse convertible,7.0,NVDA:0.3235;MSFT:0.6000;TSLA:0.0765,Min variance,10000000.0,75.06,75.18,% strike,37.91,37.02,0.0522,3540.0,accepted,P260126,75.06
+2026-02-02 00:00:00,0.1383,220,13,Private bank D,reverse convertible,7.0,AAPL:0.6310;AMZN:0.2047;TSLA:0.1643,HRP,10000000.0,80.88,81.01,% strike,32.12,31.23,0.0839,3710.0,accepted,P260202,80.88
+2026-02-09 00:00:00,0.6615,240,21,Insurer H,capital-protected note,22.0,AAPL:0.3333;MSFT:0.3333;TSLA:0.3333,Equal weight,20000000.0,22.56,22.37,% participation,33.61,34.29,0.4066,-11340.0,accepted,P260209,100.0
+2026-02-17 00:00:00,0.3056,244,19,Private bank D,reverse convertible,7.0,AAPL:0.6000;NVDA:0.1642;MSFT:0.2358,Min variance,10000000.0,83.76,83.94,% strike,29.14,28.29,0.2068,3386.0,accepted,P260217,83.76
+2026-02-23 00:00:00,0.2483,240,4,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-03-02 00:00:00,0.1981,244,0,,,,,,,,,,,,,,no pitch: no winnable note,,
+2026-03-09 00:00:00,0.2525,256,0,,,,,,,,,,,,,,no pitch: no winnable note,,
+2026-03-16 00:00:00,1.2232,256,128,Private bank C,reverse convertible,9.0,NVDA:0.3333;MSFT:0.3333;AMZN:0.3333,Equal weight,10000000.0,90.14,90.55,% strike,28.97,28.38,1.1303,4553.0,accepted,P260316,90.14
+2026-03-23 00:00:00,1.0795,256,110,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-03-30 00:00:00,1.283,260,31,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-04-06 00:00:00,0.7565,256,106,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-04-13 00:00:00,2.3386,384,183,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,30000000.0,89.11,89.56,% strike,29.93,29.38,0.9684,15558.0,accepted,P260413,89.11
+2026-04-20 00:00:00,1.3977,384,41,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,30000000.0,88.22,88.36,% strike,31.37,30.51,0.8654,16429.0,accepted,P260420,88.22
+2026-04-27 00:00:00,1.1458,384,65,Insurer H,capital-protected note,22.0,AAPL:0.2500;NVDA:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,20000000.0,22.83,22.5,% participation,32.95,33.38,1.0846,-17965.0,accepted,P260427,100.0
+2026-05-04 00:00:00,0.7797,256,30,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,20000000.0,90.92,91.03,% strike,28.33,27.44,0.4945,10681.0,accepted,P260504,90.92
+2026-05-11 00:00:00,0.5484,256,33,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-05-18 00:00:00,0.4785,384,4,Private bank C,reverse convertible,9.0,AAPL:0.6000;AMZN:0.3169;TSLA:0.0831,Min variance,10000000.0,92.0,92.12,% strike,27.27,26.39,0.3275,4441.0,accepted,P260518,92.0
+2026-05-26 00:00:00,0.2672,380,18,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-06-01 00:00:00,2.1483,376,87,Insurer H,capital-protected note,22.0,MSFT:0.4483;AMZN:0.4157;TSLA:0.1361,Min variance,20000000.0,22.07,21.82,% participation,34.51,35.04,1.4617,-14504.0,accepted,P260601,100.0
+2026-06-08 00:00:00,0.6431,384,51,Private bank C,reverse convertible,9.0,NVDA:0.2460;AMZN:0.5532;TSLA:0.2007,HRP,20000000.0,88.2,88.47,% strike,31.36,30.64,0.2544,11019.0,accepted,P260608,88.2
+2026-06-15 00:00:00,3.7313,384,142,Insurer H,capital-protected note,22.0,AAPL:0.3333;NVDA:0.3333;TSLA:0.3333,Equal weight,40000000.0,22.03,21.72,% participation,34.44,34.87,1.2319,-28679.0,accepted,P260615,100.0
+2026-06-22 00:00:00,1.7608,384,129,Private bank D,reverse convertible,7.0,AAPL:0.5344;MSFT:0.3211;TSLA:0.1446,HRP,20000000.0,83.85,84.33,% strike,28.77,28.2,1.5036,8896.0,accepted,P260622,83.85
+2026-06-29 00:00:00,1.6828,384,29,Insurer H,capital-protected note,22.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,40000000.0,24.25,24.05,% participation,30.45,31.15,0.7378,-26970.0,accepted,P260629,100.0
+2026-07-06 00:00:00,2.7083,384,192,Private bank C,reverse convertible,9.0,AAPL:0.4051;NVDA:0.2022;MSFT:0.2641;TSLA:0.1286,HRP,30000000.0,83.91,84.85,% strike,35.06,35.02,1.8962,22698.0,accepted,P260706,83.91
+2026-07-13 00:00:00,1.8559,384,184,Private bank C,reverse convertible,9.0,AAPL:0.6000;NVDA:0.2795;TSLA:0.1205,Min variance,10000000.0,83.83,84.43,% strike,35.59,35.19,1.7211,5378.0,accepted,P260713,83.83
+2026-07-20 00:00:00,1.8727,384,187,Private bank D,reverse convertible,7.0,AAPL:0.5225;NVDA:0.1937;MSFT:0.2838,HRP,10000000.0,80.55,81.13,% strike,31.93,31.46,1.7966,4593.0,accepted,P260720,80.55
+2026-07-27 00:00:00,2.0736,360,159,Private bank D,reverse convertible,7.0,AAPL:0.4102;NVDA:0.2640;MSFT:0.3258,Max diversification,10000000.0,82.0,82.49,% strike,30.59,30.04,2.0528,4920.0,accepted,P260727,82.0
+2026-08-03 00:00:00,3.0429,384,175,Private bank D,reverse convertible,7.0,AAPL:0.3333;NVDA:0.3333;AMZN:0.3333,Equal weight,10000000.0,78.13,78.61,% strike,34.61,34.06,3.0177,5151.0,accepted,P260803,78.13
+2026-08-10 00:00:00,2.1789,384,172,Private bank D,reverse convertible,7.0,AAPL:0.6000;NVDA:0.3227;TSLA:0.0773,Min variance,10000000.0,80.66,81.1,% strike,32.06,31.45,2.1324,4043.0,accepted,P260810,80.66
+2026-08-17 00:00:00,3.1609,384,10,Insurer H,capital-protected note,22.0,NVDA:0.3919;MSFT:0.2512;AMZN:0.2756;TSLA:0.0812,Min variance,40000000.0,22.52,22.39,% participation,33.27,34.05,1.7344,-34608.0,accepted,P260817,100.0
+2026-08-24 00:00:00,1.8813,384,192,Private bank D,reverse convertible,7.0,AAPL:0.3333;MSFT:0.3333;AMZN:0.3333,Equal weight,10000000.0,82.46,83.04,% strike,30.05,29.59,1.8131,4941.0,accepted,P260824,82.46
+2026-08-31 00:00:00,1.7971,384,192,Private bank C,reverse convertible,9.0,AAPL:0.3333;NVDA:0.3333;MSFT:0.3333,Equal weight,20000000.0,92.25,92.91,% strike,26.35,26.02,1.4149,11751.0,accepted,P260831,92.25
+2026-09-08 00:00:00,1.3214,384,192,Private bank D,reverse convertible,7.0,AAPL:0.2500;NVDA:0.2500;MSFT:0.2500;AMZN:0.2500,Equal weight,10000000.0,86.29,86.83,% strike,26.44,25.94,1.3103,6299.0,accepted,P260908,86.29
+2026-09-14 00:00:00,3.8593,384,190,Private bank D,reverse convertible,7.0,AAPL:0.3964;MSFT:0.3047;AMZN:0.2989,Inverse vol,20000000.0,87.63,88.19,% strike,25.07,24.58,3.6852,9627.0,accepted,P260914,87.63
+2026-09-21 00:00:00,3.1232,384,186,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-09-28 00:00:00,1.2468,384,66,Insurer H,capital-protected note,22.0,AAPL:0.6000;AMZN:0.3101;TSLA:0.0899,Min variance,20000000.0,26.27,26.13,% participation,27.66,28.48,0.8717,-11665.0,accepted,P260928,100.0
+2026-10-05 00:00:00,0.6885,384,186,Private bank C,reverse convertible,9.0,AAPL:0.5552;NVDA:0.2185;MSFT:0.2263,HRP,10000000.0,92.11,92.48,% strike,26.8,26.17,0.5737,5621.0,accepted,P261005,92.11
+2026-10-12 00:00:00,1.5232,384,130,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-10-19 00:00:00,3.9979,384,80,Insurer H,capital-protected note,22.0,AAPL:0.2500;MSFT:0.2500;AMZN:0.2500;TSLA:0.2500,Equal weight,40000000.0,24.74,24.63,% participation,29.79,30.63,2.0971,-35219.0,accepted,P261019,100.0
+2026-10-26 00:00:00,2.8736,384,192,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
+2026-11-02,2.636,384,134,,,,,,,,,,,,,,no pitch: no winnable note reduces the book's risk,,
